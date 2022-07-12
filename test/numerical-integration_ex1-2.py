@@ -55,10 +55,16 @@ def main_function():
 
         # compute approximated solution using trapezoidal rule (trap)
         # Note: for f(x)=x, the syntax doesn't change between trap or mpr
-        I_approx_trap_f2 = np.cos(x[0]) + np.cos(x[-1])
+        # I_approx_trap_f2 = np.cos(x[0]) + np.cos(x[-1])
+        # for i in range(1, n - 1):
+        #     I_approx_trap_f2 += np.cos(x[i]) + np.cos(x[i + 1])
+        # I_approx_trap_f2 *= h / 2
+
+        I_approx_trap_f2 = np.zeros(n)
+        I_approx_trap_f2[0] = round(np.cos(x[0]),3)
+        I_approx_trap_f2[-1] = round(np.cos(x[-1]),3)
         for i in range(1, n - 1):
-            I_approx_trap_f2 += np.cos(x[i]) + np.cos(x[i + 1])
-        I_approx_trap_f2 *= h / 2
+            I_approx_trap_f2[i] = (x[i+1] - x[i]) * (round(np.cos(x[i]),3) + round(np.cos(x[i + 1]),3))/2
 
         error_mpr_f1 = np.abs(I_approx_mpr_f1 - I_ana_f1)  # compute error
         error_mpr_f2 = np.abs(I_approx_mpr_f2 - I_ana_f2)
