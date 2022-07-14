@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 '''
-Comparing numerical integration: middle point rule VS trapezoidal rule
+Comparing numerical integration: middle point rule VS trapezoidal rule. Relate to Exercise 1 and 2 of the numerical
+integration (see presentation).
 
 We will try with different function, describe as follow:
 f1 = x
