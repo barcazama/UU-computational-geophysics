@@ -23,8 +23,7 @@ from scipy import integrate
 
 def main_function():
     # parameters
-    nq = 2  # number of quadratic points
-    for nq in [2,5]:
+    for nq in [2,5]: # number of quadrature points
         x_max = 1 # maximum value of x
         x_min = -1 # minimum value of x
 
