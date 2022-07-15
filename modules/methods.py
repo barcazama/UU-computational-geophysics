@@ -403,7 +403,7 @@ def fem_diffusion_1d(T_init, kappa, rho, cp, hx, nnx, dt, tol, max_iter, T_ana):
     @return iter_count: int, number of iterations used for the solution
     @return err: float, error of the solution
     """
-    nelx = nnx -1 # number of elements in x direction
+    nelx = nnx - 1 # number of elements in x direction
     err_ana = 10 # initialise error to start loop
     iter_count = 0 # initialise iteration counter
     T = T_init.copy() # initialise RHS (array to store solution)
@@ -474,3 +474,56 @@ def fem_advection_1d(T_init, u, kappa, rho, cp, hx, nnx, dt, max_iter, solver):
         iter_count += 1 # iteration counter update
     method_name = 'FEM_advection' # storing method used for the solution
     return method_name, T, iter_count
+
+
+def fem_diffusion_2d(T_init, kappa, rho, cp, hx, hy, nnx, nny, dt, tol, max_iter, T_ana):
+    """
+    Solve the diffusion equation in 1D using the finite element method.
+    @param T_init: np.array, initial temperature
+    @param kappa: float, thermal conductivity [W/(m*K)]
+    @param rho: float, density [kg/m^3]
+    @param cp: float, specific heat capacity [J/(kg*K)]
+    @param hx: float, space step in x direction [m]
+    @param nnx: int, number of grid points in x direction
+    @param dt: float, time step [s]
+    @param tol: float, stop condition (error tolerance)
+    @param max_iter: int, maximum number of iterations
+    @param T_ana: np.array, analytical temperature profile
+    @return method_name: str, method_name used for the solution
+    @return T: np.array, temperature at each grid point at the end of the simulation
+    @return iter_count: int, number of iterations used for the solution
+    @return err: float, error of the solution
+    """
+    # TODO: work in progress
+    nelx = nnx - 1 # number of elements in x direction
+    nely = nny - 1
+    err_ana = 10 # initialise error to start loop
+    iter_count = 0 # initialise iteration counter
+    T = T_init.copy() # initialise RHS (array to store solution)
+    while err_ana > tol and iter_count < max_iter:
+        A = np.zeros((nnx, nnx))  # initialise matrix A
+        b = np.zeros(nnx)  # initialise RHS with initial temperature profile
+    #     for ex in range(0, nelx):
+    #         for ey in range(0, nely):
+    #             # loop over elements
+    #             Me = hx / 3 * rho * cp * np.array([[1, 0.5], [0.5, 1]]) # elemental mass matrix
+    #             Kde = kappa / hx * np.array([[1, -1], [-1, 1]]) # elemental
+    #             Ae = Me + Kde * dt # elemental A matrix
+    #             A[e, e] += Ae[0, 0] # assemble matrix A
+    #             A[e + 1, e] += Ae[1, 0]
+    #             A[e, e + 1] += Ae[0, 1]
+    #             A[e + 1, e + 1] += Ae[1, 1]
+    #             b[e] += (Me[0, 0] + Me[0, 1]) * T[e] # assemble array b
+    #             b[e + 1] += (Me[1, 0] + Me[1, 1]) * T[e + 1]
+    #     A[0, :] = 0 # Boundary conditions
+    #     A[nnx - 1, :] = 0
+    #     A[0, 0] = 1
+    #     A[nnx - 1, nnx - 1] = 1
+    #     b[0] = T_init[0] # boundary condition
+    #     b[nnx - 1] = T_init[nnx - 1] # boundary condition
+    #     T_new = spsolve(csc_matrix(A), b) # solve system of linear equations using scipy for computing misfit
+    #     T = T_new.copy()
+    #     err_ana = np.max(np.abs(T_ana - T_new)) # misfit between calculated and analytical solution
+    #     iter_count += 1 # iteration counter update
+    # method_name = 'FEM_diffusion_2D' # storing method used for the solution
+    # return method_name, T, iter_count, err_ana

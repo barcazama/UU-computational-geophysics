@@ -1,14 +1,11 @@
 #! /usr/bin/env python3
 """
 This is the main file for the project.
-It contain multiple condition that are used to select the method, the dimension and the mesh type.
-Here is the following options:
-    - method: fde_explicit, fde_implicit, fem_implicit (Crank-Nicholson?)
-    - solver: jacobi, gauss_seidel, scipy
-    - dimension: 1D, 2D, 3D
-    - mesh type: uniform, nonuniform, triangular
-
-TODO: check which method was implemented and which is not before finalizing the project.
+It contains multiple condition that are used to select the method, the solver, the dimension and other parameters.
+Here is the following main options:
+    - method: diffusion and advection for FDM and FEM and multiple scheme (implicit, explicit, Crank-Nicolson)
+    - solver: explicit, scipy, jacobi, gauss_seidel, crank-nicolson, FTCS, Lax-Friedrichs
+    - dimension: 1D, 2D
 """
 # import
 import os
@@ -41,6 +38,7 @@ def main_function():
     # method = '2d_advection'  # specify method: implicit for 2D advection
     # method = '1d_fem_diffusion'  # specify method: finite element method for 1D diffusion
     method = '1d_fem_advection'  # specify method: finite element method for 1D advection
+    # method = '2d_fem_diffusion'  # specify method: finite element method for 2D diffusion
 
     # Solver Options
     # --------------
@@ -56,20 +54,23 @@ def main_function():
     # solver = '1d_FTCS' # specify solver 'FTCS'
     # solver = '1d_Lax-Friedrichs'  # specify solver 'Lax-Wendroff'
     # --
-    # Solver choice for 2D
+    # Solver choice for 2D diffusion
     # solver = None  # there is only one solver implemented for 2D methods
     # --
     # Solver choice for 1D FEM diffusion
     # solver = None # there is only one solver implemented for 1D FEM diffusion
     # --
     # Solver choice for 1D FEM advection
-    # solver = 'explicit' # not really a solver but was easier to implement the three schemes
+    # solver = 'explicit' # not really a solver but was easier to implement a choice calling them solver (consistency)
     solver = 'implicit'
     # solver = 'crank-nicolson'
+    # --
+    # Solver choice for 2D FEM
+    # solver = None # there is only one solver implemented for 2D FEM
 
     # physical variables
-    Lx = 1  # Length of the domain [m] (use this for 1D domain as well)
-    Ly = 1  # Height of the domain [m]
+    Lx = 100e3  # Length of the domain [m] (use this for 1D domain as well)
+    Ly = 80e3  # Height of the domain [m]
     start_x = 0  # start of the domain on x-axis [m] (use this for 1D domain as well)
     start_y = 0  # start of the domain on y-axis [m]
     kappa = 3  # thermal conductivity [W/m/K]
@@ -85,7 +86,7 @@ def main_function():
     # physical variables 2D specific
     T0 = 200  # initial temperature [K]
     T_max = 100  # maximum temperature [K]
-    sigma = 0.2  # half-width of the peak [m]
+    sigma = 1e4  # half-width of the peak [m]
     Q = 0  # heat flux [W/m2]
     xc = 2 / 3
     yc = 2 / 3
@@ -96,10 +97,10 @@ def main_function():
 
     # numerical variables
     nnx = 51  # number of grid points in x direction (use this for 1D domain as well)
-    nny = 51  # number of grid points in y direction
-    dt = 0.002 # time step [s], if 0 then it will be calculated automatically
+    nny = 30  # number of grid points in y direction
+    dt = 0 # time step [s], if 0 then it will be calculated automatically
     tol = 1e-2  # stop condition (error tolerance)
-    max_iter = 250  # maximum number of iterations for the solvers
+    max_iter = 500  # maximum number of iterations for the solvers
     CFL = 0.5  # Courant–Friedrichs–Lewy condition, making dt smaller (CFL < 1)
     output_filename = 'test'  # string, filename for the output file (e.g. 'plot_temp')
 
@@ -124,7 +125,7 @@ def main_function():
         dt = hx ** 2 / (2 * kappa) * CFL if dt == 0 else dt  # time step [s] (in case it is not specified)
     if method == '1d_advection' or method == '1d_fem_advection':
         dt = hx / u * CFL if dt == 0 else dt  # time step [s] (in case it is not specified)
-    if method == '2d_diffusion_explicit' or method == '2d_diffusion_implicit':
+    if method == '2d_diffusion_explicit' or method == '2d_diffusion_implicit' or method == '2d_fem_diffusion':
         dt = np.min([hx ** 2, hy ** 2]) / (
                 2 * kappa) * CFL if dt == 0 else dt  # time step [s] (in case it is not specified)
 
@@ -322,6 +323,10 @@ def main_function():
         time_fem_advection_1d = stop - start  # time needed to compute the solution
         operations.results_print(method_name_fem_advection_1d, err_fem_advection_1d, iter_count_fem_advection_1d,
                                  max_iter, time_fem_advection_1d)
+
+    if method == '2d_fem_diffusion':
+        # TODO: work in progress
+        pass
 
     ###### Plot ######
     if method == '1d_diffusion_explicit' or method == 'all_1d_diffusion':
