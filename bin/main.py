@@ -30,22 +30,25 @@ def main_function():
     # ---------------
     # method = 'all_1d_diffusion'  # specify method: both implicit and explicit for 1D diffusion
     # method = '1d_diffusion_explicit' # specify method: explicit for 1D diffusion
-    # method = '1d_diffusion_implicit' # specify method: implicit for 1D diffusion
+    method = '1d_diffusion_implicit' # specify method: implicit for 1D diffusion
     # method = '1d_advection'  # specify method: implicit for 1D advection
     # method = 'all_2d_diffusion'  # specify method: both implicit and explicit for 2D diffusion
     # method = '2d_diffusion_explicit' # specify method: explicit for 2D diffusion
     # method = '2d_diffusion_implicit' # specify method: implicit for 2D diffusion
     # method = '2d_advection'  # specify method: implicit for 2D advection
     # method = '1d_fem_diffusion'  # specify method: finite element method for 1D diffusion
-    method = '1d_fem_advection'  # specify method: finite element method for 1D advection
+    # method = '1d_fem_advection'  # specify method: finite element method for 1D advection
     # method = '2d_fem_diffusion'  # specify method: finite element method for 2D diffusion
 
     # Solver Options
     # --------------
+    # Solver choice for 1D diffusion - Explicit
+    # solver = 'None'
+    # --
     # Solver choice for 1D diffusion - Implicit
     # solver = 'all_1d_diffusion'  # all solvers for 1D diffusion
     # solver = '1d_scipy' # SciPy solver for 1D diffusion
-    # solver = '1d_jacobi' # Jacobi solver for 1D diffusion
+    solver = '1d_jacobi' # Jacobi solver for 1D diffusion
     # solver = '1d_gauss_seidel' # Gauss-Seidel solver for 1D diffusion
     # solver = '1d_crank-nicolson' # Crank-Nicolson solver for 1D diffusion
     # --
@@ -62,30 +65,30 @@ def main_function():
     # --
     # Solver choice for 1D FEM advection
     # solver = 'explicit' # not really a solver but was easier to implement a choice calling them solver (consistency)
-    solver = 'implicit'
+    # solver = 'implicit'
     # solver = 'crank-nicolson'
     # --
     # Solver choice for 2D FEM
     # solver = None # there is only one solver implemented for 2D FEM
 
     # physical variables
-    Lx = 100e3  # Length of the domain [m] (use this for 1D domain as well)
+    Lx = 1000  # Length of the domain [m] (use this for 1D domain as well)
     Ly = 80e3  # Height of the domain [m]
     start_x = 0  # start of the domain on x-axis [m] (use this for 1D domain as well)
     start_y = 0  # start of the domain on y-axis [m]
-    kappa = 3  # thermal conductivity [W/m/K]
+    kappa = 1e-6  # thermal conductivity [W/m/K]
     u = 1  # velocity [m/s], relevant when there is advection
 
     # physical variable 1D specific
-    T_left = 1.0  # float, boundary temperature at x=0 [C]
-    T_right = 0.0  # flaot, boundary temperature at x=Lx [C]
-    T_middle = 0.0  # flaot, initial temperature at t=0 [C]
-    T_peak_start_x = 0.25  # flaot, start of the middle temperature on x-axis[m]
-    T_peak_end_x = Lx  # flaot, end of the middle temperature on x-axis[m] (rest beside boundary will be zeros)
+    T_left = 100.0  # float, boundary temperature at x=0 [C]
+    T_right = 200.0  # flaot, boundary temperature at x=Lx [C]
+    T_middle = 123.0  # flaot, initial temperature at t=0 [C]
+    T_peak_start_x = 20  # flaot, start of the middle temperature on x-axis[m]
+    T_peak_end_x = Lx-20  # flaot, end of the middle temperature on x-axis[m] (rest beside boundary will be zeros)
 
     # physical variables 2D specific
-    T0 = 200  # initial temperature [K]
-    T_max = 100  # maximum temperature [K]
+    T0 = 200  # initial temperature [C]
+    T_max = 100  # maximum temperature [C]
     sigma = 1e4  # half-width of the peak [m]
     Q = 0  # heat flux [W/m2]
     xc = 2 / 3
@@ -96,13 +99,13 @@ def main_function():
     cp = 1  # specific heat capacity [J/kg/K]
 
     # numerical variables
-    nnx = 51  # number of grid points in x direction (use this for 1D domain as well)
-    nny = 30  # number of grid points in y direction
-    dt = 0 # time step [s], if 0 then it will be calculated automatically
+    nnx = 11  # number of grid points in x direction (use this for 1D domain as well)
+    nny = 11  # number of grid points in y direction
+    dt = 0.0 # time step [s], if 0 then it will be calculated automatically
     tol = 1e-2  # stop condition (error tolerance)
     max_iter = 500  # maximum number of iterations for the solvers
     CFL = 0.5  # Courant–Friedrichs–Lewy condition, making dt smaller (CFL < 1)
-    output_filename = 'test'  # string, filename for the output file (e.g. 'plot_temp')
+    output_filename = '1d_diffusion_implicit_jacobi'  # string, filename for the output file (e.g. 'plot_temp')
 
     # script below contain automatic computation, any changes should be made before to avoid hard-codding
     ##############################################################################################################
@@ -331,9 +334,14 @@ def main_function():
     ###### Plot ######
     if method == '1d_diffusion_explicit' or method == 'all_1d_diffusion':
         operations.results_plot_1d(path_output, x, T_init, T_explicit_1d, method_explicit_1d)
-    if method == '1d_diffusion_implicit' or method == 'all_1d_diffusion':
-        operations.results_plot_1d(path_output, x, T_init, T_jacobi, method_jacobi, T_gauss, method_gauss, T_crank,
-                                   method_crank)
+    if method == '1d_diffusion_implicit' and solver == '1d_scipy':
+        operations.results_plot_1d(path_output, x, T_init, T_scipy, method_scipy)
+    if method == '1d_diffusion_implicit' and solver == '1d_jacobi':
+        operations.results_plot_1d(path_output, x, T_init, T_jacobi, method_jacobi)
+    if method == '1d_diffusion_implicit' and solver == '1d_gauss_seidel':
+        operations.results_plot_1d(path_output, x, T_init, T_gauss, method_gauss)
+    if method == '1d_diffusion_implicit' and solver == '1d_crank-nicolson':
+        operations.results_plot_1d(path_output, x, T_init, T_crank, method_crank)
     if method == '1d_advection' and solver == 'all_1d_advection':
         operations.results_plot_1d(path_output, x, T_init, T_ftcs, method_ftcs, T_lax,
                                    method_lax)  # plot initial and final temperature profiles

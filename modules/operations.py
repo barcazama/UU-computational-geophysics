@@ -179,7 +179,7 @@ def results_plot_1d(path_output, x, T_init, T_final, label_1, T_final_2=None, la
     plt.plot(x, T_final_2, color='red', linewidth=2, label=label_2) if T_final_2 is not None else None
     plt.plot(x, T_final_3, color='orange', linewidth=2, label=label_3) if T_final_3 is not None else None
     plt.xlabel('x [m]')
-    plt.ylabel('T [K]')
+    plt.ylabel('T [C]')
     plt.legend()
     plt.savefig(path_output)
     plt.show()
